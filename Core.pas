@@ -3,13 +3,14 @@ unit Core;
 interface
 
 uses
-  System.Threading, System.SysUtils, System.StrUtils, XSuperObject;
+  System.Threading, System.SysUtils, System.StrUtils;
 
 type
   TMainCore = class
     private
       fCommand: ITask;
       procedure StartCommand;
+      procedure StartProcess;
     public
       constructor Create;
       destructor Destroy;
@@ -58,7 +59,7 @@ begin
         case IndexStr(Command, ['start']) of
           0:
             begin
-              WriteLn('Begin to started');
+              Self.StartProcess;
             end;
           -1:
             WriteLn('Command not found.');
@@ -67,6 +68,11 @@ begin
     end);
 
   fCommand.Start;
+end;
+
+procedure TMainCore.StartProcess;
+begin
+
 end;
 
 end.

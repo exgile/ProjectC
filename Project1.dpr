@@ -9,9 +9,6 @@ program Project1;
 uses
   Windows,
   System.SysUtils,
-  // JSON reader/writer because the internal one is f*ck up
-  XSuperJSON in 'Tools\XSuperJSON.pas',
-  XSuperObject in 'Tools\XSuperObject.pas',
   Core in 'Core.pas';
 
 var
