@@ -7,6 +7,8 @@ uses
 
 type
   TMainCore = class
+    const
+      WordFileName: AnsiString = 'words.txt';
     private
       fCommand: ITask;
       procedure StartCommand;
@@ -71,8 +73,25 @@ begin
 end;
 
 procedure TMainCore.StartProcess;
+var
+  WordFile: TextFile;
+  Worded: String;
 begin
+  // Map file to variable
+  AssignFile(WordFile, WordFileName);
 
+  // Open the file handle for read/write
+  Reset(WordFile);
+
+  // loop for read by each line
+  while not Eof(WordFile) do
+  begin
+    ReadLn(WordFile, Worded);
+    //WriteLn(Worded);
+  end;
+
+  // close the file handle
+  CloseFile(WordFile);
 end;
 
 end.
