@@ -5,15 +5,18 @@ interface
 uses
   System.Threading, System.SysUtils, System.Classes, System.StrUtils;
 
+resourcestring
+  WordFileName = 'words.txt';
+  FolderName = 'Data';
+
 type
   TMainCore = class
-    const
-      WordFileName: AnsiString = 'words.txt';
-      FolderName: AnsiString = 'Data';
     private
       fCommand: ITask;
       procedure StartCommand;
       procedure StartProcess;
+      procedure StartFolderReportLevel1;
+      function Tab(Count: UInt8): string;
       function GetDirSize(const Path: String): UInt32;
     public
       constructor Create;
@@ -65,7 +68,7 @@ begin
         else
           CommandParameters := string.Empty;
 
-        case IndexStr(Command, ['start', 'getsize']) of
+        case IndexStr(Command, ['start', 'getsize', 'report1']) of
           0:
             begin
               Self.StartProcess;
@@ -74,6 +77,10 @@ begin
             begin
               writeln(GetDirSize('Data'));
             end;
+          2:
+            begin
+              StartFolderReportLevel1;
+            end;
           -1:
             WriteLn('Command not found.');
         end;
@@ -81,6 +88,51 @@ begin
     end);
 
   fCommand.Start;
+end;
+
+procedure TMainCore.StartFolderReportLevel1;
+var
+  Searched, SearchedLv2, SearchedFile: TSearchRec;
+  WordString: TStringList;
+begin
+  WordString := TStringList.Create;
+  try
+    if FindFirst(FolderName + '/*', faDirectory, Searched) = 0 then
+    begin
+      repeat
+        if (Searched.Name = '..') or (Searched.Name = '.') then
+          Continue;
+
+        WordString.Add( Format('Directory Name: %s%s Size:%dkb' ,[Searched.Name, Tab(2), (Self.GetDirSize(FolderName + '/' + Searched.Name) div 1024 )]));
+
+        if FindFirst(FolderName + '/' + Searched.Name + '/*', faDirectory,
+          SearchedLv2) = 0 then
+        begin
+          repeat
+            if (SearchedLv2.Name = '..') or (SearchedLv2.Name = '.') then
+              Continue;
+
+            if FindFirst(FolderName + '/' + Searched.Name + '/' +
+              SearchedLv2.Name + '/*.*', faAnyFile, SearchedFile) = 0 then
+            begin
+              repeat
+                if (SearchedFile.Name = '..') or (SearchedFile.Name = '.') then
+                  Continue;
+
+                WordString.Add( Format('%s - File Name: %s%s Size: %dbyte(s)' ,[Tab(1), SearchedFile.Name, Tab(7), SearchedFile.Size]));
+              until FindNext(SearchedFile) <> 0;
+            end;
+
+          until FindNext(SearchedLv2) <> 0;
+        end;
+
+      until FindNext(Searched) <> 0;
+    end;
+    WordString.SaveToFile('report.txt');
+    WriteLn('Report Succeed. Saved to report.txt');
+  finally
+    WordString.Free;
+  end;
 end;
 
 procedure TMainCore.StartProcess;
@@ -157,6 +209,16 @@ begin
   TotalSize := 0;
   Find(Path);
   Result := TotalSize;
+end;
+
+function TMainCore.Tab(Count: UInt8): string;
+var
+  I: UInt8;
+begin
+  Result := '';
+
+  for I := 0 to Count-1 do
+    Result := Result + #9;
 end;
 
 end.
