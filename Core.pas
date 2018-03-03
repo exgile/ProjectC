@@ -45,6 +45,16 @@ begin
   if not DirectoryExists(FolderName) then
     if not CreateDir(FolderName) then
       WriteLn(Format('System Error: Directory ''%s'' has not been created', [FolderName]));
+
+  WriteLn('################################### Console Command ########################################');
+  WriteLn('################ 1. start - write words.txt into directory                                 #');
+  WriteLn('################ 2. report - report all folders detail save into report.txt                #');
+  WriteLn('################ 3. diff - see the difference size between unziped folder and ziped folder #');
+  WriteLn('################    save into dirreport.txt                                                #');
+  WriteLn('################ 4. word2sql - put all words in words.txt into sqlite database             #');
+  WriteLn('################ 5. result - show all result that for question number 7.1, 7.2, 7.3, 7.4   #');
+  WriteLn('############################################################################################');
+  WriteLn('################ The action must be in ascending number above to get the best effective    #');
 end;
 
 destructor TMainCore.Destroy;
