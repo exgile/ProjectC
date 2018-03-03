@@ -56,7 +56,6 @@ var
   InputArray: TArray<string>;
   C: string;
   D: Double;
-  zip: tzipfile;
 begin
   fCommand := TTask.Create(
     procedure()
