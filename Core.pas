@@ -4,6 +4,7 @@ interface
 
 uses
   System.Threading, System.SysUtils, System.Classes, System.StrUtils, System.ZIP, Math,
+  System.RegularExpressions,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf,
   FireDAC.Phys.Intf, FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async,
   FireDAC.Phys, FireDAC.VCLUI.Wait, Data.DB, FireDAC.Comp.Client,
@@ -22,6 +23,7 @@ type
       procedure StartFolderReportLevel1;
       procedure StartDiffReport;
       procedure StartDictionary2SQL;
+      procedure StartQueryResult;
       function Tab(Count: UInt8): string;
       function GetDirSize(const Path: String): UInt32;
       function DiffPercent(Val1, Val2: UInt32): UInt32;
@@ -80,7 +82,7 @@ begin
         else
           CommandParameters := string.Empty;
 
-        case IndexStr(Command, ['start', 'report', 'diff', 'word2sql']) of
+        case IndexStr(Command, ['start', 'report', 'diff', 'word2sql', 'result']) of
           0:
             begin
               Self.StartProcess;
@@ -96,6 +98,10 @@ begin
           3:
             begin
               StartDictionary2SQL;
+            end;
+          4:
+            begin
+              StartQueryResult;
             end;
           -1:
             WriteLn('Command not found.');
@@ -135,6 +141,9 @@ begin
     begin
       ReadLn(DicFile, Word);
 
+      if not (Length(Word) >= 2) then
+        Continue;
+
       Query.SQL.Clear;
       Query.SQL.Add( Format('INSERT INTO Dictionary(Keyword) VALUES(''%s'')', [Word]) );
       Query.ExecSQL;
@@ -143,6 +152,80 @@ begin
     Query.Free;
     Connection.Free;
     CloseFile(DicFile);
+  end;
+end;
+
+procedure TMainCore.StartQueryResult;
+var
+  Connection: TFDConnection;
+  Query: TFDQuery;
+  Count: UInt32;
+  Bool: String;
+begin
+  Connection := TFDConnection.Create(nil);
+  Query := TFDQuery.Create(nil);
+  try
+    Query.Connection := Connection;
+    Query.FetchOptions.RowsetSize := 1000000;
+
+    Connection.DriverName := 'SQLite';
+    Connection.Params.Database := 'SQLData.s3db';
+    Connection.Open;
+
+    // we probably save time to select only once if there're many rows
+    Query.SQL.Clear;
+    Query.SQL.Add('SELECT * FROM Dictionary');
+    Query.Open;
+
+    Count := 0;
+    while not Query.Eof do
+    begin
+      if Length(Query.FieldByName('Keyword').AsString) > 5 then
+        Inc(Count, 1);
+      Query.Next;
+    end;
+    WriteLn( Format('There (is)/(are) %d word(s) that has more than 5 syllables.', [Count]) );
+
+    Count := 0;
+    Query.First;
+    while not Query.Eof do
+    begin
+      if TRegEx.IsMatch(Query.FieldByName('Keyword').AsString, '(.)\1{1,}') then
+        Inc(Count, 1);
+      Query.Next;
+    end;
+    WriteLn( Format('There (is)/(are) %d word(s) that has same character at once.', [Count]) );
+
+    Count := 0;
+    Query.First;
+    while not Query.Eof do
+    begin
+      if TRegEx.IsMatch(Query.FieldByName('Keyword').AsString, '^(.).*\1$') then
+        Inc(Count, 1);
+      Query.Next;
+    end;
+    WriteLn( Format('There (is)/(are) %d word(s) that first and last character are similar.' ,[Count]) );
+
+    WriteLn('Are you sure you want to update the first character to uppercase? press Y to apply others to skip');
+    ReadLn(Input, Bool);
+
+    if (Bool = 'Y') or (Bool = 'Yes') or (Bool = 'y') or (Bool = 'yes') then
+    begin
+      Query.SQL.Clear;
+      Query.SQL.Add('UPDATE Dictionary SET Keyword = UPPER(SUBSTR(Keyword,1,1)) || SUBSTR(Keyword, 2)');
+      Query.ExecSQL;
+
+      Query.SQL.Clear;
+      Query.SQL.Add('SELECT * FROM Dictionary LIMIT 1');
+      Query.Open;
+
+      WriteLn( Format('Value in top 1 is ''%s'', It should be uppercase.', [Query.FieldByName('Keyword').AsString]) );
+    end;
+
+    WriteLn(' Succeed Command.');
+  finally
+    Query.Free;
+    Connection.Free;
   end;
 end;
 
