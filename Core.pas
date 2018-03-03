@@ -3,7 +3,7 @@ unit Core;
 interface
 
 uses
-  System.Threading, System.SysUtils, System.Classes, System.StrUtils;
+  System.Threading, System.SysUtils, System.Classes, System.StrUtils, System.ZIP, Math;
 
 resourcestring
   WordFileName = 'words.txt';
@@ -16,8 +16,10 @@ type
       procedure StartCommand;
       procedure StartProcess;
       procedure StartFolderReportLevel1;
+      procedure StartDiffReport;
       function Tab(Count: UInt8): string;
       function GetDirSize(const Path: String): UInt32;
+      function DiffPercent(Val1, Val2: UInt32): UInt32;
     public
       constructor Create;
       destructor Destroy;
@@ -43,12 +45,18 @@ begin
 
 end;
 
+function TMainCore.DiffPercent(Val1, Val2: UInt32): UInt32;
+begin
+  Exit( Round((1 - (Val1 / Val2)) * 100) );
+end;
+
 procedure TMainCore.StartCommand;
 var
   Command, CommandParameters: string;
   InputArray: TArray<string>;
   C: string;
   D: Double;
+  zip: tzipfile;
 begin
   fCommand := TTask.Create(
     procedure()
@@ -68,18 +76,18 @@ begin
         else
           CommandParameters := string.Empty;
 
-        case IndexStr(Command, ['start', 'getsize', 'report1']) of
+        case IndexStr(Command, ['start', 'report', 'diff']) of
           0:
             begin
               Self.StartProcess;
             end;
           1:
             begin
-              writeln(GetDirSize('Data'));
+              StartFolderReportLevel1;
             end;
           2:
             begin
-              StartFolderReportLevel1;
+              StartDiffReport;
             end;
           -1:
             WriteLn('Command not found.');
@@ -88,6 +96,56 @@ begin
     end);
 
   fCommand.Start;
+end;
+
+procedure TMainCore.StartDiffReport;
+var
+  Dir, Files: TSearchRec;
+  Zip: TZipFile;
+  TextCreate: TStringList;
+  DirSize, FileSizes: Integer;
+begin
+  Zip := TZipFile.Create;
+  TextCreate := TStringList.Create;
+  try
+    // Zip File First
+    if FindFirst(FolderName + '/*', faDirectory, Dir) = 0 then
+    begin
+      repeat
+        if (Dir.Name = '..') or (Dir.Name = '.') then
+          Continue;
+
+        if Dir.Attr = faDirectory then
+          Zip.ZipDirectoryContents(FolderName + '/' + Dir.Name + '.zip', FolderName + '/' + Dir.Name);
+      until FindNext(Dir) <> 0;
+    end;
+
+    // Find Diff zip and dir
+    if FindFirst(FolderName + '/*', faDirectory, Dir) = 0 then
+    begin
+      repeat
+        if (Dir.Name = '..') or (Dir.Name = '.') then
+          Continue;
+
+        if not (Dir.Attr = faDirectory) then
+          Continue;
+
+        if FindFirst(FolderName + '/' + Dir.Name + '.zip', faAnyFile + faArchive, Files) = 0 then
+        begin
+          DirSize := Round(Self.GetDirSize(FolderName + '/' + Dir.Name) / 1024);
+          FileSizes := Round(Files.Size / 1024);
+          TextCreate.Add( Format('Directory Name: %s Size: %dkb Zip Size: %dkb Different: %d%%', [Dir.Name, DirSize, FileSizes, Self.DiffPercent(FileSizes, DirSize)]) );
+        end;
+      until FindNext(Dir) <> 0 ;
+    end;
+
+    TextCreate.SaveToFile('dirreport.txt');
+  finally
+    Zip.Free;
+    TextCreate.Free;
+    FindClose(Dir);
+    FindClose(Files);
+  end;
 end;
 
 procedure TMainCore.StartFolderReportLevel1;
@@ -132,6 +190,9 @@ begin
     WriteLn('Report Succeed. Saved to report.txt');
   finally
     WordString.Free;
+    FindClose(Searched);
+    FindClose(SearchedLv2);
+    FindClose(SearchedFile);
   end;
 end;
 

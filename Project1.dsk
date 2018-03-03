@@ -1,39 +1,39 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'d:\program files (x86)\embarcadero\studio\19.0\source\rtl\common\System.Classes.pas',0,1,736,3,604,0,0,,
-File_1=TSourceModule,'d:\program files (x86)\embarcadero\studio\19.0\SOURCE\RTL\SYS\System.pas',0,1,3126,20,3014,0,0,,
-File_2=TSourceModule,'d:\program files (x86)\embarcadero\studio\19.0\SOURCE\RTL\SYS\System.SysUtils.pas',0,1,7530,50,7546,0,0,,
-File_3=TSourceModule,'C:\Users\TOP\Desktop\MyProject\ProjecetC\Tools\XSuperObject.pas',0,1,1,1,1,0,0,,
-File_4=TSourceModule,'C:\Users\TOP\Desktop\PangyaSource\gameserver\MainServer.pas',0,1,1,23,23,0,0,,
-File_5=TSourceModule,'C:\Users\TOP\Desktop\MyProject\ProjecetC\Tools\XSuperJSON.pas',0,1,1,1,1,0,0,,
-File_6=TSourceModule,'C:\Users\TOP\Desktop\PangyaSource\gameserver\PlayersList.pas',0,1,1,1,1,0,0,,
-File_7=TSourceModule,'C:\Users\TOP\Desktop\PangyaSource\gameserver\GameBase\GameModePractice.pas',0,1,22,65,536,0,0,,
-File_8=TSourceModule,'C:\Users\TOP\Desktop\PangyaSource\gameserver\GameBase\GameBase.pas',0,1,1032,38,1039,0,0,,
-File_9=TSourceModule,'C:\Users\TOP\Desktop\PangyaSource\gameserver\GameBase\GamePlayer.pas',0,1,1,19,22,0,0,,
-File_10=TSourceModule,'C:\Users\TOP\Desktop\PangyaSource\gameserver\Enum.pas',0,1,346,30,350,0,0,,
-File_11=TSourceModule,'C:\Users\TOP\Desktop\PangyaSource\gameserver\GameCore\PlayerDataCore.pas',0,1,46,46,74,0,0,,
-File_12=TSourceModule,'C:\Users\TOP\Desktop\PangyaSource\gameserver\PangyaClient.pas',0,1,37,13,59,0,0,,
-File_13=TSourceModule,'d:\program files (x86)\embarcadero\studio\19.0\source\rtl\common\System.StrUtils.pas',0,1,473,1,458,0,0,,
-File_14=TSourceModule,'C:\Users\TOP\Desktop\PangyaSource\gameserver\GameCore\GamePlayCore.pas',0,1,1,1,1,0,0,,
+File_0=TSourceModule,'d:\program files (x86)\embarcadero\studio\19.0\SOURCE\RTL\SYS\System.SysUtils.pas',0,1,10405,1,10421,0,0,,
+File_1=TSourceModule,'d:\program files (x86)\embarcadero\studio\19.0\source\rtl\common\System.IOUtils.pas',0,1,1418,1,1435,0,0,,
+File_2=TSourceModule,'d:\program files (x86)\embarcadero\studio\19.0\source\rtl\common\System.Math.pas',0,1,3449,8,3466,0,0,,
+File_3=TSourceModule,'d:\program files (x86)\embarcadero\studio\19.0\source\rtl\common\System.Zip.pas',0,1,870,7,859,0,0,,
+File_4=TSourceModule,'d:\program files (x86)\embarcadero\studio\19.0\source\rtl\common\System.Classes.pas',0,1,736,3,604,0,0,,
+File_5=TSourceModule,'d:\program files (x86)\embarcadero\studio\19.0\SOURCE\RTL\SYS\System.pas',0,1,3126,20,3014,0,0,,
+File_6=TSourceModule,'C:\Users\TOP\Desktop\MyProject\ProjecetC\Tools\XSuperObject.pas',0,1,1,1,1,0,0,,
+File_7=TSourceModule,'C:\Users\TOP\Desktop\PangyaSource\gameserver\MainServer.pas',0,1,1,23,23,0,0,,
+File_8=TSourceModule,'C:\Users\TOP\Desktop\MyProject\ProjecetC\Tools\XSuperJSON.pas',0,1,1,1,1,0,0,,
+File_9=TSourceModule,'C:\Users\TOP\Desktop\PangyaSource\gameserver\PlayersList.pas',0,1,1,1,1,0,0,,
+File_10=TSourceModule,'C:\Users\TOP\Desktop\PangyaSource\gameserver\GameBase\GameModePractice.pas',0,1,22,65,536,0,0,,
+File_11=TSourceModule,'C:\Users\TOP\Desktop\PangyaSource\gameserver\GameBase\GameBase.pas',0,1,1032,38,1039,0,0,,
+File_12=TSourceModule,'C:\Users\TOP\Desktop\PangyaSource\gameserver\GameBase\GamePlayer.pas',0,1,1,19,22,0,0,,
+File_13=TSourceModule,'C:\Users\TOP\Desktop\PangyaSource\gameserver\Enum.pas',0,1,346,30,350,0,0,,
+File_14=TSourceModule,'C:\Users\TOP\Desktop\PangyaSource\gameserver\GameCore\PlayerDataCore.pas',0,1,46,46,74,0,0,,
 
 [Modules]
-Module0=C:\Users\TOP\Desktop\MyProject\ProjecetC\Core.pas
-Module1=C:\Users\TOP\Desktop\MyProject\ProjecetC\Project1.dproj
+Module0=C:\Users\TOP\Desktop\MyProject\ProjecetC\Project1.dproj
+Module1=C:\Users\TOP\Desktop\MyProject\ProjecetC\Core.pas
 Module2=default.htm
 Count=3
 EditWindowCount=1
 
-[C:\Users\TOP\Desktop\MyProject\ProjecetC\Core.pas]
-ModuleType=TSourceModule
-
 [C:\Users\TOP\Desktop\MyProject\ProjecetC\Project1.dproj]
 ModuleType=TBaseProject
+
+[C:\Users\TOP\Desktop\MyProject\ProjecetC\Core.pas]
+ModuleType=TSourceModule
 
 [default.htm]
 ModuleType=TURLModule
 
 [EditWindow0]
 ViewCount=3
-CurrentEditView=C:\Users\TOP\Desktop\MyProject\ProjecetC\Core.pas
+CurrentEditView=C:\Users\TOP\Desktop\MyProject\ProjecetC\Project1.dpr
 View0=0
 View1=1
 View2=2
@@ -73,8 +73,8 @@ WelcomePageURL=bds:/default.htm
 [View1]
 CustomEditViewType=TEditView
 Module=C:\Users\TOP\Desktop\MyProject\ProjecetC\Project1.dpr
-CursorX=45
-CursorY=34
+CursorX=44
+CursorY=29
 TopLine=7
 LeftCol=1
 Elisions=
@@ -84,12 +84,12 @@ EditViewName=C:\Users\TOP\Desktop\MyProject\ProjecetC\Project1.dpr
 [View2]
 CustomEditViewType=TEditView
 Module=C:\Users\TOP\Desktop\MyProject\ProjecetC\Core.pas
-CursorX=76
-CursorY=122
-TopLine=92
+CursorX=5
+CursorY=146
+TopLine=118
 LeftCol=1
 Elisions=
-Bookmarks=
+Bookmarks={9,50,44}
 EditViewName=C:\Users\TOP\Desktop\MyProject\ProjecetC\Core.pas
 
 [UndockedDesigner]
