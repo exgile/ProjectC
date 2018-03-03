@@ -3,7 +3,11 @@ unit Core;
 interface
 
 uses
-  System.Threading, System.SysUtils, System.Classes, System.StrUtils, System.ZIP, Math;
+  System.Threading, System.SysUtils, System.Classes, System.StrUtils, System.ZIP, Math,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf,
+  FireDAC.Phys.Intf, FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async,
+  FireDAC.Phys, FireDAC.VCLUI.Wait, Data.DB, FireDAC.Comp.Client,
+  FireDAC.Phys.SQLite, FireDAC.Phys.SQLiteDef, FireDAC.Stan.ExprFuncs, FireDAC.DAPT;
 
 resourcestring
   WordFileName = 'words.txt';
@@ -17,6 +21,7 @@ type
       procedure StartProcess;
       procedure StartFolderReportLevel1;
       procedure StartDiffReport;
+      procedure StartDictionary2SQL;
       function Tab(Count: UInt8): string;
       function GetDirSize(const Path: String): UInt32;
       function DiffPercent(Val1, Val2: UInt32): UInt32;
@@ -75,7 +80,7 @@ begin
         else
           CommandParameters := string.Empty;
 
-        case IndexStr(Command, ['start', 'report', 'diff']) of
+        case IndexStr(Command, ['start', 'report', 'diff', 'word2sql']) of
           0:
             begin
               Self.StartProcess;
@@ -88,6 +93,10 @@ begin
             begin
               StartDiffReport;
             end;
+          3:
+            begin
+              StartDictionary2SQL;
+            end;
           -1:
             WriteLn('Command not found.');
         end;
@@ -95,6 +104,46 @@ begin
     end);
 
   fCommand.Start;
+end;
+
+procedure TMainCore.StartDictionary2SQL;
+var
+  Connection: TFDConnection;
+  Query: TFDQuery;
+  DicFile: TextFile;
+  Word: String;
+begin
+  Connection := TFDConnection.Create(nil);
+  Query := TFDQuery.Create(nil);
+  AssignFile(DicFile, WordFileName);
+  try
+    Reset(DicFile);
+
+    Query.Connection := Connection;
+
+    Connection.DriverName := 'SQLite';
+    Connection.Params.Database := 'SQLData.s3db';
+    Connection.Open;
+
+    // create the table if not exists
+    // in this case we must ensure that table is full-text-search for searching purpose
+    Query.SQL.Clear;
+    Query.SQL.Add('CREATE VIRTUAL TABLE IF NOT EXISTS Dictionary USING FTS5(Keyword)');
+    Query.ExecSQL;
+
+    while not Eof(DicFile) do
+    begin
+      ReadLn(DicFile, Word);
+
+      Query.SQL.Clear;
+      Query.SQL.Add( Format('INSERT INTO Dictionary(Keyword) VALUES(''%s'')', [Word]) );
+      Query.ExecSQL;
+    end;
+  finally
+    Query.Free;
+    Connection.Free;
+    CloseFile(DicFile);
+  end;
 end;
 
 procedure TMainCore.StartDiffReport;
@@ -133,12 +182,13 @@ begin
         begin
           DirSize := Round(Self.GetDirSize(FolderName + '/' + Dir.Name) / 1024);
           FileSizes := Round(Files.Size / 1024);
-          TextCreate.Add( Format('Directory Name: %s Size: %dkb Zip Size: %dkb Different: %d%%', [Dir.Name, DirSize, FileSizes, Self.DiffPercent(FileSizes, DirSize)]) );
+          TextCreate.Add( Format('Directory Name: %s Size: %dkb%sZip Size: %dkb%sDifferent: %d%%', [Dir.Name, DirSize, Tab(1), FileSizes, Tab(2), Self.DiffPercent(FileSizes, DirSize)]) );
         end;
       until FindNext(Dir) <> 0 ;
     end;
 
     TextCreate.SaveToFile('dirreport.txt');
+    WriteLn(' Dir Diff Reported was saved to dirreport.txt');
   finally
     Zip.Free;
     TextCreate.Free;
