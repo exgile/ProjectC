@@ -2,7 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{40350C90-77D5-4210-AF29-DBBAB73CA42D}</ProjectGuid>
         <ProjectVersion>18.3</ProjectVersion>
-        <FrameworkType>None</FrameworkType>
+        <FrameworkType>VCL</FrameworkType>
         <MainSource>Project1.dpr</MainSource>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
@@ -78,7 +78,7 @@
         <DCC_F>false</DCC_F>
         <DCC_K>false</DCC_K>
         <DCC_UsePackage>RESTComponents;emsclientfiredac;DataSnapFireDAC;FireDACIBDriver;emsclient;FireDACCommon;RESTBackendComponents;soapserver;CloudService;FireDACCommonDriver;inet;FireDAC;FireDACSqliteDriver;soaprtl;soapmidas;$(DCC_UsePackage)</DCC_UsePackage>
-        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
+        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
         <SanitizedProjectName>Project1</SanitizedProjectName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Android)'!=''">
@@ -148,6 +148,13 @@
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="Core.pas"/>
+        <DCCReference Include="SynPDF\mORMotReport.pas"/>
+        <DCCReference Include="SynPDF\SynCommons.pas"/>
+        <DCCReference Include="SynPDF\SynCrypto.pas"/>
+        <DCCReference Include="SynPDF\SynGdiPlus.pas"/>
+        <DCCReference Include="SynPDF\SynLZ.pas"/>
+        <DCCReference Include="SynPDF\SynPdf.pas"/>
+        <DCCReference Include="SynPDF\SynZip.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

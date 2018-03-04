@@ -4,7 +4,7 @@ interface
 
 uses
   System.Threading, System.SysUtils, System.Classes, System.StrUtils, System.ZIP, Math,
-  System.RegularExpressions,
+  System.RegularExpressions, mORMotReport,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf,
   FireDAC.Phys.Intf, FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async,
   FireDAC.Phys, FireDAC.VCLUI.Wait, Data.DB, FireDAC.Comp.Client,
@@ -24,6 +24,7 @@ type
       procedure StartDiffReport;
       procedure StartDictionary2SQL;
       procedure StartQueryResult;
+      procedure StartExport2PDF;
       function Tab(Count: UInt8): string;
       function GetDirSize(const Path: String): UInt32;
       function DiffPercent(Val1, Val2: UInt32): UInt32;
@@ -53,6 +54,7 @@ begin
   WriteLn('################    save into dirreport.txt                                                #');
   WriteLn('################ 4. word2sql - put all words in words.txt into sqlite database             #');
   WriteLn('################ 5. result - show all result that for question number 7.1, 7.2, 7.3, 7.4   #');
+  WriteLn('################ 6. pdf - export all words from database to result.pdf                     #');
   WriteLn('############################################################################################');
   WriteLn('################ The action must be in ascending number above to get the best effective    #');
 end;
@@ -92,7 +94,7 @@ begin
         else
           CommandParameters := string.Empty;
 
-        case IndexStr(Command, ['start', 'report', 'diff', 'word2sql', 'result']) of
+        case IndexStr(Command, ['start', 'report', 'diff', 'word2sql', 'result', 'pdf']) of
           0:
             begin
               Self.StartProcess;
@@ -113,6 +115,10 @@ begin
             begin
               StartQueryResult;
             end;
+          5:
+            begin
+              StartExport2PDF;
+            end;
           -1:
             WriteLn('Command not found.');
         end;
@@ -121,6 +127,58 @@ begin
 
   fCommand.Start;
 end;
+
+procedure TMainCore.StartExport2PDF;
+var
+  Connection: TFDConnection;
+  Query: TFDQuery;
+  PDF: TGDIPages;
+begin
+  Connection := TFDConnection.Create(nil);
+  Query := TFDQuery.Create(nil);
+  PDF := TGDIPages.Create(nil);
+  try
+    Query.Connection := Connection;
+
+    Connection.DriverName := 'SQLite';
+    Connection.Params.Database := 'SQLData.s3db';
+    Connection.Open;
+
+    Query.SQL.Clear;
+    Query.SQL.Add('SELECT * FROM Dictionary');
+    Query.Open;
+
+    PDF.NewPageLayout(psA4);
+    PDF.BeginDoc;
+    PDF.AddTextToHeader('TOP''s Project');
+    PDF.SaveLayout;
+    PDF.TextAlign := taRight;
+
+    PDF.AddTextToFooterAt(DateTimeToStr(Now), PDF.RightMarginPos);
+    PDF.RestoreSavedLayout;
+    PDF.AddTextToFooter('https://github.com/topkung1/ProjectC');
+
+    PDF.NewLine;
+
+    while not Query.Eof do
+    begin
+      PDF.DrawText(Query.FieldByName('Keyword').AsString);
+      Query.Next;
+    end;
+
+    PDF.EndDoc;
+    PDF.ExportPDFApplication := 'TOP';
+    PDF.ExportPDFAuthor := 'TOPKUNG';
+    PDF.ExportPDF('result.pdf', False, False);
+
+    WriteLn('Successfully exported to result.pdf!');
+  finally
+    Query.Free;
+    Connection.Free;
+    PDF.Free;
+  end;
+end;
+
 
 procedure TMainCore.StartDictionary2SQL;
 var

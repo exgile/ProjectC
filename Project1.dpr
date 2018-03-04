@@ -9,7 +9,14 @@ program Project1;
 uses
   Windows,
   System.SysUtils,
-  Core in 'Core.pas';
+  Core in 'Core.pas',
+  mORMotReport in 'SynPDF\mORMotReport.pas',
+  SynCommons in 'SynPDF\SynCommons.pas',
+  SynCrypto in 'SynPDF\SynCrypto.pas',
+  SynGdiPlus in 'SynPDF\SynGdiPlus.pas',
+  SynLZ in 'SynPDF\SynLZ.pas',
+  SynPdf in 'SynPDF\SynPdf.pas',
+  SynZip in 'SynPDF\SynZip.pas';
 
 var
   Msg: TMsg;
